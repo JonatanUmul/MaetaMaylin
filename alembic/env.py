@@ -16,7 +16,10 @@ def run_migrations(connection):
 
 
 async def online():
-    engine = create_async_engine(get_config().database_url)
+    config = get_config()
+    engine = create_async_engine(
+        config.database_url, connect_args=config.database_connect_args()
+    )
     async with engine.connect() as connection:
         await connection.run_sync(run_migrations)
     await engine.dispose()

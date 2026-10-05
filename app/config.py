@@ -1,7 +1,9 @@
+import ssl
 from functools import lru_cache
 
 from pydantic import Field, HttpUrl, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine import make_url
 
 
 class Config(BaseSettings):
@@ -25,8 +27,14 @@ class Config(BaseSettings):
     def use_async_driver(cls, value: str) -> str:
         for prefix in ("postgres://", "postgresql://"):
             if value.startswith(prefix):
-                return "postgresql+asyncpg://" + value[len(prefix):]
+                return "postgresql+asyncpg://" + value[len(prefix) :]
         return value
+
+    def database_connect_args(self) -> dict:
+        host = make_url(self.database_url).host or ""
+        if host.endswith((".supabase.co", ".supabase.com")):
+            return {"ssl": ssl.create_default_context()}
+        return {}
 
 
 @lru_cache
