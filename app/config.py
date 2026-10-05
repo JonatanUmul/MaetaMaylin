@@ -35,6 +35,9 @@ class Config(BaseSettings):
         host = make_url(self.database_url).host or ""
         if host.endswith((".supabase.co", ".supabase.com")):
             context = ssl.create_default_context()
+            # Supabase's 2021 root predates the key-usage requirement enforced
+            # by Python 3.13+. Keep certificate and hostname verification.
+            context.verify_flags &= ~ssl.VERIFY_X509_STRICT
             context.load_verify_locations(
                 cafile=str(Path(__file__).parent / "certs" / "supabase-ca.crt")
             )

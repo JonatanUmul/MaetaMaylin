@@ -7,6 +7,7 @@ The destination URL is read from a private file, never command-line arguments.
 import argparse
 import asyncio
 import shutil
+import ssl
 from pathlib import Path
 
 from sqlalchemy import func, insert, select, text
@@ -125,6 +126,8 @@ if __name__ == "__main__":
         parser.error("--destination-file is required for transfer")
     try:
         asyncio.run(transfer(args))
+    except ssl.SSLCertVerificationError as error:
+        raise SystemExit(f"TLS verification failed: {error.verify_message}") from None
     except Exception as error:  # noqa: BLE001 -- sanitize database errors at CLI boundary
         # Avoid leaking database passwords or private SQL parameters in tracebacks.
         raise SystemExit(f"Transfer failed: {type(error).__name__}") from None
