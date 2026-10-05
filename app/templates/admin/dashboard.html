@@ -1,0 +1,46 @@
+{% extends 'admin/base.html' %}
+{% block content %}<div class="page-heading">
+    <div><span class="eyebrow">VISTA GENERAL</span>
+        <h1>El día a día de Maeta Mailyn</h1>
+        <p>Revisa lo que llegó y prepara los próximos detalles.</p>
+    </div><a class="button" href="/admin/products/new">+ Nuevo producto</a>
+</div>
+<div class="stats"><a class="stat" href="/admin/orders?status=Pendiente"><span>Pedidos pendientes</span><strong>{{
+            counts.get(statuses.PENDING, 0) }}</strong><small>Por revisar y confirmar</small></a><a class="stat"
+        href="/admin/orders?status=Confirmado"><span>Confirmados</span><strong>{{ counts.get(statuses.CONFIRMED, 0)
+            }}</strong><small>Por preparar</small></a><a class="stat"
+        href="/admin/orders?status=Entregado"><span>Entregados</span><strong>{{ counts.get(statuses.DELIVERED, 0)
+            }}</strong><small>Pedidos completados</small></a><a class="stat"
+        href="/admin/products"><span>Productos</span><strong>{{ product_count }}</strong><small>Catálogo por encargo</small></a></div>
+{% if not notifications_enabled %}<div class="notice">WhatsApp está pausado. Los pedidos se guardan correctamente y
+    puedes administrarlos aquí.</div>{% elif failed_notifications %}<div class="notice error">{{ failed_notifications }}
+    notificaciones requieren revisión.</div>{% endif %}
+<section class="panel">
+    <div class="panel-heading">
+        <h2>Últimos pedidos</h2><a href="/admin/orders">Ver todos →</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Fecha · Guatemala</th>
+                    <th>Referencia interna</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>{% for order in recent %}<tr>
+                    <td>{{ order.reference }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ order.created_at|localtime }}</td>
+                    <td>{{ order.currency }} {{ '%.2f'|format(order.total) }}</td>
+                    <td><span class="status status-{{ order.status.name|lower }}">{{ order.status.value }}</span></td>
+                    <td><a href="/admin/orders/{{ order.id }}">Abrir →</a></td>
+                </tr>{% else %}<tr>
+                    <td colspan="6" class="empty">Todavía no hay pedidos recibidos.</td>
+                </tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>{% endblock %}

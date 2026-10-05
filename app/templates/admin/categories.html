@@ -1,0 +1,37 @@
+{% extends 'admin/base.html' %}
+{% block content %}<div class="page-heading">
+    <div><span class="eyebrow">ORGANIZACIÓN</span>
+        <h1>Categorías</h1>
+        <p>Organiza los arreglos y los próximos productos de tu tienda.</p>
+    </div>
+</div>
+<div class="form-grid">
+    <section class="panel form-panel">
+        <h2>Nueva categoría</h2>
+        <form method="post" action="/admin/categories"><input name="csrf" type="hidden"
+                value="{{ csrf }}"><label>Nombre<input name="name" required minlength="2" maxlength="100"
+                    placeholder="Regalos"></label><label>Identificador<input name="slug" required minlength="2"
+                    maxlength="120" pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                    placeholder="regalos-artesanales"><small>Minúsculas, números y guiones, sin
+                    espacios.</small></label><button class="button">Crear categoría</button></form>
+    </section>
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Categorías existentes</h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Identificador</th>
+                </tr>
+            </thead>
+            <tbody>{% for c in categories %}<tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.slug }}</td>
+                </tr>{% else %}<tr>
+                    <td colspan="2" class="empty">Todavía no hay categorías.</td>
+                </tr>{% endfor %}</tbody>
+        </table>
+    </section>
+</div>{% endblock %}

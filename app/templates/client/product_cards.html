@@ -1,0 +1,13 @@
+<div class="product-grid">{% for product in section_products %}<article class="product-card"><a
+                        class="product-image tone-{{ loop.index % 3 }}" href="/productos/{{ product.id }}"><img
+                            src="{{ product.image_url }}" alt="{{ product.title }}" loading="lazy"><span class="tag">Por encargo</span></a>
+                    <div class="product-info"><a href="/productos/{{ product.id }}">
+                            <h3>{{ product.title }}</h3>
+                        </a>
+                        <p>{% if demo %}Un detalle hecho con amor.{% else %}{{ product.description|truncate(65, true)
+                            }}{% endif %}</p>
+                        <div class="product-bottom quotation-product"><button class="add-button" data-add="{{ product.id }}"
+                                
+                                aria-label="Añadir {{ product.title }} a mi solicitud">{{ icon('bag') }}<span>Añadir a solicitud</span></button></div>
+                    </div>
+                </article>{% endfor %}</div>

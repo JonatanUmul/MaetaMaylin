@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: maeta-mailyn
+    runtime: python
+    plan: free
+    buildCommand: pip install .
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: ADMIN_SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_COOKIE_SECURE
+        value: "true"
+      - key: EVOLUTION_ENABLED
+        value: "false"

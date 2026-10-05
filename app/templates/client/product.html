@@ -1,0 +1,14 @@
+{% extends 'client/base.html' %}
+{% block title %}{{ product.title }} · Maeta Mailyn{% endblock %}
+{% block content %}<section class="detail"><a class="back" href="/#coleccion">← Volver a la colección</a>
+    <div class="detail-grid">
+        <div class="detail-art"><img src="{{ product.image_url }}" alt="{{ product.title }}"></div>
+        <div class="detail-copy"><span class="eyebrow">{{ category.name }}</span>
+            <h1>{{ product.title }}</h1><p class="quotation-label">Cotización personalizada</p>
+            <p class="description">{% if demo %}Una creación artesanal para regalar y hacer especial cada ocasión. Consulta los detalles y opciones de personalización.{% else %}{{ product.description }}{% endif %}</p>
+            <p class="order-note">Cada creación se realiza por encargo. Disponibilidad y tiempos de elaboración sujetos a confirmación.</p>
+            <label class="quantity-label">Cantidad <input id="product-quantity" type="number" min="1" max="100" value="1"></label><button class="button" data-add="{{ product.id }}" data-quantity="product-quantity">Añadir a mi solicitud +</button>
+            <div class="order-note">♡ Al enviar tu solicitud revisaremos disponibilidad y te contactaremos para cotizar.</div>
+        </div>
+    </div>
+</section>{% endblock %}

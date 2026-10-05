@@ -1,0 +1,71 @@
+{% extends 'admin/base.html' %}
+{% block content %}<a class="back" href="/admin/orders">← Todos los pedidos</a>
+<div class="page-heading">
+    <div><span class="eyebrow">PEDIDO {{ order.reference }}</span>
+        <h1>{{ order.customer_name }}</h1>
+        <p>{{ order.created_at|localtime }} · Hora de Guatemala</p>
+    </div><span class="status status-{{ order.status.name|lower }}">{{ order.status.value }}</span>
+</div>
+<div class="form-grid order-grid">
+    <div>
+        <section class="panel">
+            <div class="panel-heading">
+                <h2>Productos del pedido</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio de referencia</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% for item in order.items %}<tr>
+                            <td>{{ item.product_title }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ order.currency }} {{ '%.2f'|format(item.unit_price) }}</td>
+                            <td>{{ order.currency }} {{ '%.2f'|format(item.unit_price * item.quantity) }}</td>
+                        </tr>{% endfor %}</tbody>
+                </table>
+            </div>
+            <div class="order-total"><span>Referencia interna de productos</span><strong>{{ order.currency }} {{
+                    '%.2f'|format(order.total) }}</strong></div>
+        </section>
+        <section class="panel form-panel">
+            <h2>Datos de entrega</h2>
+            <dl>
+                <dt>Cliente</dt>
+                <dd>{{ order.customer_name }}</dd>
+                <dt>WhatsApp</dt>
+                <dd><a href="tel:{{ order.phone }}">{{ order.phone }}</a></dd>
+                <dt>Dirección</dt>
+                <dd class="pre-wrap">{{ order.address }}</dd>
+                <dt>Notas especiales</dt>
+                <dd class="pre-wrap">{{ order.notes or 'Sin notas adicionales' }}</dd>
+            </dl>
+            <p class="hint">Los pagos y el costo de entrega se coordinan fuera de la plataforma.</p>
+        </section>
+    </div>
+    <aside>
+        <section class="panel form-panel">
+            <h2>Gestionar estado</h2>{% if next_statuses %}<form method="post"
+                action="/admin/orders/{{ order.id }}/status"><input name="csrf" type="hidden" value="{{ csrf }}"><input
+                    name="expected_status" type="hidden" value="{{ order.status.value }}"><label>Nuevo estado<select
+                        name="status" required>{% for state in next_statuses %}<option value="{{ state.value }}">{{
+                            state.value }}</option>{% endfor %}</select></label><button
+                    class="button full-width">Guardar estado</button></form>{% else %}<p class="hint">Este pedido está
+                finalizado y ya no admite cambios de estado.</p>{% endif %}<div class="inventory-note">Trabajo por encargo: sin control de existencias.</div><p class="hint">Confirma cuando hayas acordado con el cliente la cotización y los tiempos de elaboración. Los cambios de estado no modifican existencias.</p>
+        </section>
+        <section class="panel form-panel">
+            <h2>Notificación</h2>
+            <p>{% if event and event.sent_at %}<span class="status status-confirmed">Aceptada por Evolution</span>{%
+                elif not notifications_enabled %}<span class="status status-pending">WhatsApp pausado</span>{% elif
+                event and event.failed_at %}<span class="status status-cancelled">Requiere revisión</span>{% else
+                %}<span class="status status-pending">Pendiente de envío</span>{% endif %}</p>
+            <p class="hint">El envío a WhatsApp no afecta el registro ni el estado del pedido.</p>
+        </section>
+        <p class="hint order-uuid">Folio: {{ order.reference }}</p>
+    </aside>
+</div>{% endblock %}

@@ -1,0 +1,7 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">TRÁFICO DE TU TIENDA</span><h1>Visitas</h1><p>Conteo anónimo de páginas vistas desde que se activó esta función.</p></div></div>
+<div class="stats-grid"><section class="stat-card"><span>Hoy · Guatemala</span><strong>{{ today }}</strong><small>Páginas vistas</small></section><section class="stat-card"><span>Últimos 30 días</span><strong>{{ total }}</strong><small>Páginas vistas</small></section></div>
+<section class="panel"><div class="panel-heading"><h2>Actividad por día</h2></div><table><thead><tr><th>Fecha</th><th>Páginas vistas</th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.day.strftime('%d/%m/%Y') }}</td><td>{{ row.views }}</td></tr>{% else %}<tr><td colspan="2">Todavía no hay visitas registradas.</td></tr>{% endfor %}</tbody></table></section>
+<p>Cada carga de una página pública cuenta, incluidas tus propias visitas y las de robots. No representa personas únicas. No guardamos IP, nombre ni cookies de seguimiento. Puedes identificar clientes cuando te envían un pedido o te contactan por WhatsApp.</p>
+{% endblock %}

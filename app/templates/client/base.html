@@ -1,0 +1,35 @@
+{% from 'client/icons.html' import icon %}
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#7535e8">
+    <title>{% block title %}Maeta Mailyn · Detalles que alegran{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/fonts.css">
+    <link rel="stylesheet" href="/static/css/store.css?v=20261004-quotation">
+    <script src="/static/js/store.js?v=quotation-v3" defer></script>
+</head>
+
+<body >
+    <div class="announcement">Pequeños detalles. Grandes sonrisas. <span>Hechos a mano para ti</span></div>
+    <header class="site-header"><a class="wordmark" href="/" aria-label="Maeta Mailyn, inicio"><img src="/static/images/maeta-mailyn-logo.png" alt="Maeta Mailyn · Creaciones artesanales y material didáctico" class="brand-logo" width="1536" height="1024"></a>
+        <nav aria-label="Principal"><a href="/">Inicio</a><a href="/?section=flowers#coleccion">Creaciones</a><a href="/?section=teaching#coleccion">Material didáctico</a><a
+                href="/#como-funciona">Cómo pedir</a></nav><a class="cart-link" href="/carrito">{{ icon('bag')
+            }}<span>Mi solicitud</span><span id="cart-count">0</span></a>
+    </header>
+    {% if demo %}<div class="demo-bar">Vista de demostración · Algunos productos e ilustraciones son de ejemplo · Cotización personalizada</div>{% endif %}
+    <main>{% block content %}{% endblock %}</main>
+    <footer><a class="wordmark" href="/"><img src="/static/images/maeta-mailyn-logo.png" alt="Maeta Mailyn · Creaciones artesanales y material didáctico" class="brand-logo" width="1536" height="1024"></a>
+        <p>Detalles que alegran. Regalos que se quedan.</p><a href="/admin">Administración</a><a
+            href="/#como-funciona">Pago y entrega coordinados personalmente</a>
+        <nav class="social-links" aria-label="Redes sociales">
+            {% for label, url in social_links.items() if url %}<a href="{{ url }}" target="_blank" rel="noopener noreferrer" class="social-button">{% if label == 'WhatsApp' %}{{ icon('whatsapp') }} {% elif label == 'Facebook' %}{{ icon('facebook') }} {% endif %}{{ label }} ↗</a>{% endfor %}
+        </nav>
+    </footer>
+    {% if social_links.get('WhatsApp') %}<a class="whatsapp-float" href="{{ social_links['WhatsApp'] }}" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">{{ icon('whatsapp') }} <span>WhatsApp</span></a>{% endif %}
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+
+</html>

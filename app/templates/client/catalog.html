@@ -1,0 +1,80 @@
+{% extends 'client/base.html' %}
+{% from 'client/icons.html' import icon %}
+{% block content %}
+<div class="store-layout">
+    <div class="store-main">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy"><span class="eyebrow">UN REGALO. MUCHAS EMOCIONES.</span>
+                <h1 id="hero-title">Detalles especiales,<br>para personas <em>especiales.</em></h1>
+                <p>Creaciones artesanales y material didáctico, creados con cariño por una maestra. Detalles para regalar e ideas para aprender.</p><a class="button" href="#coleccion">Explorar productos {{ icon('arrow') }}</a>
+                <div class="hero-note">{{ icon('heart') }} Hechos a mano, con mucho cariño.</div>
+            </div>
+            <div class="hero-art hero-photo"><img src="/static/images/arreglos-mimo-hero.jpg"
+                    alt="Creaciones artesanales en tonos rosa, lila y naranja, hechas a mano en macetas"
+                    width="912" height="1181" fetchpriority="high"><span class="floating-label">{{ icon('gift') }} Un
+                    mimo para ti</span></div>
+        </section>
+        <nav class="shop-families" aria-label="Nuestras colecciones"><a href="/?section=flowers#coleccion">{{ icon('flower') }}<span><strong>Creaciones artesanales</strong><small>Regalos, decoración y detalles únicos</small></span>{{ icon('arrow') }}</a><a href="/?section=teaching#coleccion">{{ icon('book') }}<span><strong>Material didáctico</strong><small>Creatividad para aprender</small></span>{{ icon('arrow') }}</a></nav>
+        <section class="collection" id="coleccion">
+            <div class="section-heading">
+                <div><span class="eyebrow">CREAR, REGALAR Y APRENDER</span>
+                    <h2>{{ "Creaciones artesanales" if section == "flowers" else "Material didáctico" if section == "teaching" else "Nuestras colecciones" }}</h2>
+                </div><span class="collection-note">Hechos con cariño {{ icon('heart') }}</span>
+            </div>
+            <nav class="category-tabs" aria-label="Categorías de productos"><a
+                    class="{% if not category %}active{% endif %}" href="/#coleccion">Todos</a>{% for c in categories
+                %}<a class="{% if category == c.id %}active{% endif %}" href="/?category={{ c.id }}#coleccion">{{ c.name
+                    }}</a>{% endfor %}</nav>
+            <form class="filters" method="get" action="/#coleccion">{% if section %}<input type="hidden" name="section" value="{{ section }}">{% endif %}<label class="search">{{ icon('search') }}<span
+                        class="sr-only">Buscar productos</span><input name="q" value="{{ q }}"
+                        placeholder="Buscar un detalle…" maxlength="100"></label><label><span
+                        class="sr-only">Categoría</span><select name="category">
+                        <option value="">Todas las categorías</option>{% for c in categories %}<option
+                            value="{{ c.id }}" {% if category==c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor
+                        %}
+                    </select></label><button class="filter-button">Filtrar</button>{% if q or category %}<a href="/#coleccion" class="clear-filters">Limpiar</a>{% endif %}</form>
+            {% if section or q or category %}
+            {% set section_products = products %}{% include 'client/product_cards.html' %}
+            {% if not products %}<div class="empty-state"><h3>¿No encuentras lo que buscas?</h3><p>Cuéntanos tu idea y revisaremos cómo prepararla.</p><a href="#personalizado" class="button">Consultar un encargo</a></div>{% endif %}
+            {% else %}
+            {% set section_products = products | selectattr('category_id', 'in', flower_ids) | list %}
+            <section class="catalog-family" id="arreglos"><div class="section-heading"><div><span class="eyebrow">DETALLES QUE ALEGRAN</span><h2>Creaciones artesanales</h2><p>Piezas hechas a mano para regalar, decorar y hacer especial cada ocasión.</p></div><a href="/?section=flowers#coleccion">Ver creaciones →</a></div>{% include 'client/product_cards.html' %}</section>
+            {% set section_products = products | selectattr('category_id', 'in', teaching_ids) | list %}
+            <section class="catalog-family" id="material-didactico"><div class="section-heading"><div><span class="eyebrow">IDEAS QUE ENSEÑAN</span><h2>Material didáctico</h2><p>Recursos para acompañar la creatividad y el aprendizaje.</p></div><a href="/?section=teaching#coleccion">Ver materiales →</a></div>{% if section_products %}{% include 'client/product_cards.html' %}{% else %}<div class="teaching-empty">{{ icon('book') }}<div><h3>Un recurso pensado para tu clase</h3><p>Estamos preparando el catálogo. Mientras tanto, consulta por materiales personalizados según tema, edad o grado.</p><a href="#personalizado" class="text-link">Cuéntanos qué necesitas →</a></div></div>{% endif %}</section>
+            {% set section_products = products | rejectattr('category_id', 'in', flower_ids + teaching_ids) | list %}
+            {% if section_products %}<section class="catalog-family"><div class="section-heading"><h2>Otros detalles</h2></div>{% include 'client/product_cards.html' %}</section>{% endif %}
+            {% endif %}
+            <div class="pagination">{% if page > 1 %}<a
+                    href="{{ request.url.include_query_params(page=page-1) }}#coleccion">← Anterior</a>{% endif %}{% if
+                has_next %}<a href="{{ request.url.include_query_params(page=page+1) }}#coleccion">Más detalles →</a>{%
+                endif %}</div>
+        </section>
+        <section class="custom-request" id="personalizado"><span class="eyebrow">LO IMAGINAS, LO CONVERSAMOS</span><h2>¿Buscas algo que no está en el catálogo?</h2><p>Cuéntanos qué creación artesanal o material didáctico necesitas. Puedes compartir colores, temática, grado escolar, cantidad y fecha. Revisaremos disponibilidad y te daremos una cotización antes de confirmar.</p><div class="request-actions">{% if social_links.get('WhatsApp') %}<a class="button" href="{{ social_links['WhatsApp'] }}?text={{ 'Hola Maeta Mailyn, me gustaría consultar un pedido personalizado. Necesito: ' | urlencode }}" target="_blank" rel="noopener noreferrer">{{ icon('whatsapp') }} Consultar por WhatsApp</a>{% endif %}{% if social_links.get('Facebook') %}<a class="social-button" href="{{ social_links['Facebook'] }}" target="_blank" rel="noopener noreferrer">{{ icon('facebook') }} Escríbenos en Facebook</a>{% endif %}{% if not social_links.get('WhatsApp') and not social_links.get('Facebook') %}<p>Pronto compartiremos nuestros canales de contacto.</p>{% endif %}</div><small>Esta consulta no crea un pedido automáticamente. Primero coordinamos contigo los detalles.</small></section>
+        <section class="how" id="como-funciona">
+            <div class="section-heading">
+                <h2>Tu cotización, en tres pasos</h2>
+            </div>
+            <div class="steps">
+                <div>{{ icon('gift') }}<h3>Elige tu detalle</h3>
+                    <p>Selecciona tus favoritos y sus cantidades.</p>
+                </div>
+                <div>{{ icon('heart') }}<h3>Hazlo especial</h3>
+                    <p>Déjanos tus datos y una nota.</p>
+                </div>
+                <div>{{ icon('bag') }}<h3>Lo coordinamos contigo</h3>
+                    <p>Cotizamos y coordinamos contigo.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <aside class="mini-cart summary" aria-label="Resumen de tu solicitud">
+        <div class="cart-heading">
+            <h2>Mi solicitud</h2>{{ icon('bag') }}
+        </div>
+        <div id="cart-items" aria-live="polite">Cargando tu solicitud…</div>
+        <div class="summary-line"><span>Unidades seleccionadas</span><strong id="cart-total">—</strong></div><a id="checkout-link"
+            href="/checkout" class="button">Solicitar cotización {{ icon('arrow') }}</a>
+        <p class="cart-help">Te contactaremos para cotizar.<br>Confirmaremos disponibilidad, precio y entrega.</p>
+    </aside>
+</div>
+{% endblock %}

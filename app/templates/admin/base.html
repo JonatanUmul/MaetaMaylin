@@ -1,0 +1,41 @@
+{% from 'client/icons.html' import icon %}
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{% block title %}Administración · Maeta Mailyn{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/fonts.css">
+    <link rel="stylesheet" href="/static/css/admin.css?v=20261004-maeta-mailyn">
+    <script src="/static/js/admin.js" defer></script>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar"><a class="brand" href="/admin"><img src="/static/images/maeta-mailyn-logo.png" alt="Maeta Mailyn · Creaciones artesanales y material didáctico" class="brand-logo" width="1536" height="1024"></a><span
+                class="sidebar-label">ADMINISTRACIÓN</span>
+            <nav aria-label="Administración"><a class="{% if request.url.path == '/admin' %}active{% endif %}"
+                    href="/admin">{{ icon('sparkles') }} Resumen</a><a
+                    class="{% if '/orders' in request.url.path %}active{% endif %}" href="/admin/orders">{{ icon('bag')
+                    }} Pedidos</a><a class="{% if '/products' in request.url.path %}active{% endif %}"
+                    href="/admin/products">{{ icon('gift') }} Productos</a><a
+                    class="{% if '/categories' in request.url.path %}active{% endif %}" href="/admin/categories">{{
+                    icon('heart') }} Categorías</a><a href="/admin/social">{{ icon('heart') }} Redes sociales</a><a href="/admin/visits">{{ icon('sparkles') }} Visitas</a></nav>
+            <div class="sidebar-bottom"><a href="/" target="_blank" rel="noopener">Ver tienda ↗</a>
+                <form action="/admin/logout" method="post"><input type="hidden" name="csrf"
+                        value="{{ csrf }}"><button>Cerrar sesión</button></form>
+            </div>
+        </aside>
+        <div class="admin-main">
+            <header class="admin-header"><span>Tu negocio, bajo control.</span><span class="admin-user">{{ admin }} ·
+                    Administración</span></header>
+            <main>{% if flash %}<div class="notice success" role="status">{{ flash }}</div>{% endif %}{% if error %}<div
+                    class="notice error" role="alert">{{ error }}</div>{% endif %}{% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>

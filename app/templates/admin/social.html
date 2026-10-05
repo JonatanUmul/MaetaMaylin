@@ -1,0 +1,9 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="page-heading"><div><span class="eyebrow">CONECTA CON TUS CLIENTES</span><h1>Redes sociales</h1><p>Los botones aparecerán en la tienda al guardar tus enlaces.</p></div></div>
+<section class="panel form-panel"><form method="post" action="/admin/social"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>WhatsApp de atención al cliente<input name="whatsapp" value="{{ values.get('whatsapp', '') }}" placeholder="502XXXXXXXX" maxlength="15" pattern="[0-9]{8,15}"><small>Código de país y número, sin + ni espacios. Puede ser diferente al WhatsApp del administrador.</small></label>
+<label>Facebook<input type="url" name="facebook" value="{{ values.get('facebook', '') }}" placeholder="https://www.facebook.com/tu-pagina" maxlength="300"></label>
+<label>Instagram<input type="url" name="instagram" value="{{ values.get('instagram', '') }}" placeholder="https://www.instagram.com/tu-cuenta/" maxlength="300"></label>
+<p>Deja un campo vacío para ocultar ese botón.</p><button class="button">Guardar enlaces</button>
+</form></section>{% endblock %}

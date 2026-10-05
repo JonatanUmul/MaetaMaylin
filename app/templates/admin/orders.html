@@ -1,0 +1,42 @@
+{% extends 'admin/base.html' %}
+{% block content %}<div class="page-heading">
+    <div><span class="eyebrow">VENTAS Y ENTREGAS</span>
+        <h1>Pedidos recibidos</h1>
+        <p>Cada pedido se guarda con los datos del cliente y los precios del momento.</p>
+    </div>
+</div>
+<form class="search-form" method="get"><input name="q" value="{{ q }}" maxlength="100"
+        placeholder="Nombre, teléfono o número de pedido…" aria-label="Buscar pedidos"><select name="status"
+        aria-label="Filtrar estado">
+        <option value="">Todos los estados</option>{% for status in statuses %}<option value="{{ status.value }}" {% if
+            status_filter==status.value %}selected{% endif %}>{{ status.value }}</option>{% endfor %}
+    </select><button class="button secondary">Filtrar</button><a href="/admin/orders">Limpiar</a></form>
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Cliente / WhatsApp</th>
+                    <th>Fecha · Guatemala</th>
+                    <th>Referencia interna</th>
+                    <th>Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>{% for order in orders %}<tr>
+                    <td>{{ order.reference }}</td>
+                    <td><strong>{{ order.customer_name }}</strong><small>{{ order.phone }}</small></td>
+                    <td>{{ order.created_at|localtime }}</td>
+                    <td>{{ order.currency }} {{ '%.2f'|format(order.total) }}</td>
+                    <td><span class="status status-{{ order.status.name|lower }}">{{ order.status.value }}</span></td>
+                    <td><a class="small-button" href="/admin/orders/{{ order.id }}">Gestionar →</a></td>
+                </tr>{% else %}<tr>
+                    <td colspan="6" class="empty">No hay pedidos con esos filtros.</td>
+                </tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+<div class="pagination">{% if page > 1 %}<a href="{{ request.url.include_query_params(page=page-1) }}">← Anterior</a>{%
+    endif %}{% if has_next %}<a href="{{ request.url.include_query_params(page=page+1) }}">Siguiente →</a>{% endif %}
+</div>{% endblock %}

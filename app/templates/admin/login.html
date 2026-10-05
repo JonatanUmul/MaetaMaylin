@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Ingresar · Maeta Mailyn administración</title>
+    <link rel="stylesheet" href="/static/css/fonts.css">
+    <link rel="stylesheet" href="/static/css/admin.css?v=20261004-maeta-mailyn">
+</head>
+
+<body class="login-page">
+    <main class="login-card"><a href="/" class="brand"><img src="/static/images/maeta-mailyn-logo.png" alt="Maeta Mailyn · Creaciones artesanales y material didáctico" class="brand-logo" width="1536" height="1024"></a><span class="eyebrow">TU ESPACIO DE
+            ADMINISTRACIÓN</span>
+        <h1>Bienvenido de nuevo</h1>
+        <p>Gestiona tus productos y solicitudes de cotización.</p>{% if error %}<div class="notice error" role="alert">{{
+            error }}</div>{% endif %}<form action="/admin/login" method="post"><input type="hidden" name="csrf"
+                value="{{ csrf }}"><label>Usuario<input name="username" required maxlength="100" autocomplete="username"
+                    autofocus></label><label>Contraseña<input name="password" type="password" required maxlength="200"
+                    autocomplete="current-password"></label><button class="button">Entrar al panel →</button></form><a
+            class="muted-link" href="/">← Volver a la tienda</a>
+    </main>
+</body>
+
+</html>

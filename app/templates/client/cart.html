@@ -1,0 +1,16 @@
+{% extends 'client/base.html' %}
+{% block title %}Mi solicitud · Maeta Mailyn{% endblock %}
+{% block content %}<section class="checkout-wrap"><a class="back" href="/#coleccion">← Seguir descubriendo</a><span
+        class="eyebrow">TUS DETALLES FAVORITOS</span>
+    <h1>Tus ideas, en una <em>solicitud.</em></h1>
+    <div class="checkout-grid">
+        <div id="cart-items" aria-live="polite">Cargando tu solicitud…</div>
+        <aside class="summary">
+            <h2>Tu solicitud</h2>
+            <div class="summary-line"><span>Unidades seleccionadas</span><strong id="cart-total">—</strong></div>
+            <p>Revisaremos tus productos y cantidades para preparar una cotización personalizada.</p><a class="button"
+                id="checkout-link" href="/checkout">Solicitar cotización →</a>
+            <div class="order-note">Cada creación se realiza por encargo. Disponibilidad y tiempos de elaboración sujetos a confirmación.</div>
+        </aside>
+    </div>
+</section>{% endblock %}

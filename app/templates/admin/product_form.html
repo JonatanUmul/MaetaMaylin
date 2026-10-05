@@ -1,0 +1,47 @@
+{% extends 'admin/base.html' %}
+{% block content %}<a class="back" href="/admin/products">← Productos</a>
+<div class="page-heading">
+    <div><span class="eyebrow">CATÁLOGO</span>
+        <h1>{% if product %}Editar producto{% else %}Nuevo producto{% endif %}</h1>
+        <p>Los cambios se reflejan en el catálogo al guardar.</p>
+    </div>
+</div>
+{% set title = values.get('title', product.title if product else '') %}{% set image = values.get('image_url',
+product.image_url if product else '') %}
+<form class="product-form" method="post" enctype="multipart/form-data"
+    action="{% if product %}/admin/products/{{ product.id }}/edit{% else %}/admin/products/new{% endif %}"><input
+        type="hidden" name="csrf" value="{{ csrf }}">{% if product %}<input type="hidden" name="version"
+        value="{{ values.get('version', product.version) }}">{% endif %}<div class="form-grid">
+        <section class="panel form-panel">
+            <h2>Información del producto</h2><label>Título<input name="title" value="{{ title }}" required minlength="2"
+                    maxlength="200"></label><label>Descripción<textarea name="description" required maxlength="10000"
+                    rows="5">{{ values.get('description', product.description if product else '') }}</textarea></label>
+            <div class="field-pair"><label>Precio · {{ currency }}<input name="price" type="number" step="0.01" min="0"
+                        required
+                        value="{{ values.get('price', product.price if product else '') }}"></label></div>
+            <label>Categoría<select name="category_id" required>
+                    <option value="">Selecciona una categoría</option>{% for c in categories %}<option
+                        value="{{ c.id }}" {% if (values.get('category_id', product.category_id if product else
+                        0)|string)==(c.id|string) %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+                </select></label><a class="muted-link" href="/admin/categories">Gestionar categorías →</a><label
+                class="checkbox-label"><input name="active" type="checkbox" {% if values.get('active', product.active if
+                    product else true) %}checked{% endif %}> Publicar en la tienda</label>
+        </section>
+        <section class="panel form-panel">
+            <h2>Foto del producto</h2>
+            <div class="photo-preview">{% if image %}<img id="photo-preview" src="{{ image }}"
+                    alt="Vista previa del producto">{% else %}<img id="photo-preview" alt="Vista previa del producto"
+                    hidden><span id="photo-placeholder">Tu producto empieza por una buena foto</span>{% endif %}</div>
+            <label>Subir una foto<input type="file" name="photo" id="photo-input"
+                    accept="image/jpeg,image/png,image/webp"><small>JPG, PNG o WEBP · Hasta 5 MB y 20
+                    megapíxeles.</small></label><label>O usar una URL de imagen<input name="image_url" id="photo-url"
+                    value="{{ image }}" maxlength="2048" placeholder="https://…"><small>Si subes una foto, se usará esa
+                    imagen.</small></label>
+            <p class="hint">El inventario se descuenta al confirmar pedidos. Si cambió mientras editabas, tendrás que
+                recargar para evitar sobrescribirlo.</p>
+        </section>
+    </div>
+    <div class="form-actions"><a href="/admin/products" class="button secondary">Volver sin guardar</a><button
+            class="button" {% if not categories %}disabled{% endif %}>Guardar producto</button></div>{% if not
+    categories %}<p class="error">Primero crea una categoría para guardar productos.</p>{% endif %}
+</form>{% endblock %}

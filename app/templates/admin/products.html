@@ -1,0 +1,53 @@
+{% extends 'admin/base.html' %}
+{% block content %}<div class="page-heading">
+    <div><span class="eyebrow">CATÁLOGO</span>
+        <h1>Productos e inventario</h1>
+        <p>Actualiza fotos, precios y disponibilidad de tu tienda.</p>
+    </div><a class="button" href="/admin/products/new">+ Nuevo producto</a>
+</div>
+<form class="search-form" method="get"><input name="q" value="{{ q }}" placeholder="Buscar por nombre…"
+        aria-label="Buscar productos" maxlength="100"><button class="button secondary">Buscar</button>{% if q %}<a
+        href="/admin/products">Limpiar</a>{% endif %}</form>
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Publicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>{% for product in products %}<tr>
+                    <td>
+                        <div class="table-product"><img src="{{ product.image_url }}" alt="{{ product.title }}">
+                            <div><strong>{{ product.title }}</strong><small>ID {{ product.id }}</small></div>
+                        </div>
+                    </td>
+                    <td>{{ product.category.name }}</td>
+                    <td>{{ currency }} {{ '%.2f'|format(product.price) }}</td>
+
+                    <td><span
+                            class="status {% if product.active %}status-confirmed{% else %}status-cancelled{% endif %}">{%
+                            if product.active %}Publicado{% else %}Archivado{% endif %}</span></td>
+                    <td>
+                        <div class="row-actions"><a class="small-button"
+                                href="/admin/products/{{ product.id }}/edit">Editar</a>{% if product.active %}<form
+                                method="post" action="/admin/products/{{ product.id }}/archive"><input name="csrf"
+                                    type="hidden" value="{{ csrf }}"><input name="version" type="hidden"
+                                    value="{{ product.version }}"><button class="small-button danger">Archivar</button>
+                            </form>{% endif %}</div>
+                    </td>
+                </tr>{% else %}<tr>
+                    <td colspan="5" class="empty">No hay productos con esa búsqueda.</td>
+                </tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+<div class="pagination">{% if page > 1 %}<a href="{{ request.url.include_query_params(page=page-1) }}">← Anterior</a>{%
+    endif %}{% if has_next %}<a href="{{ request.url.include_query_params(page=page+1) }}">Siguiente →</a>{% endif %}
+</div>
+<p class="hint">Archivar oculta el producto de la tienda y conserva su relación con los pedidos. Puedes volver a
+    publicarlo desde Editar.</p>{% endblock %}

@@ -1,0 +1,34 @@
+from functools import lru_cache
+
+from pydantic import Field, HttpUrl, SecretStr, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Config(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    admin_username: str = "admin"
+    admin_password_hash: SecretStr | None = None
+    admin_session_secret: SecretStr | None = Field(default=None, min_length=32)
+    admin_cookie_secure: bool = True
+
+    database_url: str
+    currency: str = Field(default="GTQ", pattern=r"^[A-Z]{3}$")
+    evolution_enabled: bool = False
+    evolution_url: HttpUrl = "https://example.com"
+    evolution_instance: str = Field(default="shop", pattern=r"^[a-zA-Z0-9_-]+$")
+    evolution_api_key: SecretStr = SecretStr("")
+    admin_whatsapp: str = Field(default="50253234824", pattern=r"^[1-9][0-9]{7,14}$")
+
+    @field_validator("database_url")
+    @classmethod
+    def use_async_driver(cls, value: str) -> str:
+        for prefix in ("postgres://", "postgresql://"):
+            if value.startswith(prefix):
+                return "postgresql+asyncpg://" + value[len(prefix):]
+        return value
+
+
+@lru_cache
+def get_config() -> Config:
+    return Config()
