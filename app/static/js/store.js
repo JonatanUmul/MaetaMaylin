@@ -90,6 +90,14 @@
   }
   window.addEventListener('storage', event => { if (event.key === key) { count(); refresh(); } });
   const form = document.getElementById('checkout-form');
+  function requestKey() {
+    // getRandomValues also works on HTTP LAN origins; randomUUID requires HTTPS.
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
   function showReceipt(receipt) {
     document.getElementById('checkout-content').hidden = true;
     document.getElementById('receipt').hidden = false;
@@ -101,11 +109,10 @@
     const data = Object.fromEntries(new FormData(form)); Object.keys(data).forEach(k => { data[k] = data[k].trim(); }); data.items = load();
     busy = true; submit.disabled = true; submit.textContent = 'Enviando tu solicitud…'; render();
     try {
-      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(data)));
-      const hash = Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2, '0')).join('');
+      const payload = JSON.stringify(data);
       let attempt; try { attempt = JSON.parse(sessionStorage.getItem('mimo-attempt')); } catch { attempt = null; }
-      if (!attempt || attempt.hash !== hash) { attempt = {hash, key: crypto.randomUUID()}; sessionStorage.setItem('mimo-attempt', JSON.stringify(attempt)); }
-      const response = await fetch('/api/checkout', {method: 'POST', headers: {'Content-Type': 'application/json', 'Idempotency-Key': attempt.key}, body: JSON.stringify(data)});
+      if (!attempt || attempt.payload !== payload) { attempt = {payload, key: requestKey()}; sessionStorage.setItem('mimo-attempt', JSON.stringify(attempt)); }
+      const response = await fetch('/api/checkout', {method: 'POST', headers: {'Content-Type': 'application/json', 'Idempotency-Key': attempt.key}, body: payload});
       const body = await response.json();
       if (!response.ok) {
         const message = typeof body.detail === 'string' ? body.detail : 'Revisa los datos ingresados, el teléfono y las cantidades.';
