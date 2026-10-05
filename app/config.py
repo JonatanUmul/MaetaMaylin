@@ -1,5 +1,6 @@
 import ssl
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, HttpUrl, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -33,7 +34,11 @@ class Config(BaseSettings):
     def database_connect_args(self) -> dict:
         host = make_url(self.database_url).host or ""
         if host.endswith((".supabase.co", ".supabase.com")):
-            return {"ssl": ssl.create_default_context()}
+            context = ssl.create_default_context()
+            context.load_verify_locations(
+                cafile=str(Path(__file__).parent / "certs" / "supabase-ca.crt")
+            )
+            return {"ssl": context}
         return {}
 
 
